@@ -1,0 +1,1 @@
+Modular pieces for PyQt5 applications.
