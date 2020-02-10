@@ -10,7 +10,7 @@ if defined _OLD_CODEPAGE (
 
 set "VIRTUAL_ENV=%CD%\venv"
 
-set "PYTHONPATH=%CD:~0,-2%custom_packages"
+set "PYTHONPATH=%CD:~0,-11%custom_packages"
 
 if not defined PROMPT (
     set "PROMPT=$P$G"
