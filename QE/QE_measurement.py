@@ -117,6 +117,7 @@ class Window(QMainWindow):
         return grp_box1
         
     def test_SM(self):
+        self.VA_wls = [400, 500, 600, 700, 800, 900, 1000]
         if self.keithley:
             self.keithley.write("*TST?")
             print(self.keithley.read())
@@ -286,7 +287,7 @@ class Window(QMainWindow):
             print("comp current")
             self.keithley.set_compliance_current()
             print("source val")
-            self.keithley.source_value(0.05)
+            self.keithley.source_value(0)
             self.keithley.source_enabled(True)
             sleep(5)
             
@@ -312,7 +313,7 @@ class Window(QMainWindow):
                 self.wls.append(self.start_wl + self.step * i)
 
             try:
-                self.keithley.source_value(0)
+                self.keithley.source_value(0.002)
                 self.keithley.source_enabled(True)
 
                 SendMessage(self.hwnd, WM_SET_SHUTTER, 1, 0)
@@ -330,8 +331,8 @@ class Window(QMainWindow):
                     self.canvas.draw()
                     self.canvas.flush_events()
                     
-                    if wl in self.VA_wls:
-                        self.measure_VA(wl)
+                    #if wl in self.VA_wls:
+                    #    self.measure_VA(wl)
             finally:
                 SendMessage(self.hwnd, WM_SET_SHUTTER, 0, 0)
                 self.keithley.source_value(0)

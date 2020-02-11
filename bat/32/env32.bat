@@ -1,0 +1,1 @@
+venv32/Scripts/activate.bat
