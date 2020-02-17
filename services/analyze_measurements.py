@@ -8,8 +8,9 @@ STEP = 2
 def get_json_data(file):
     with open(file) as f_json:
         data = json.load(f_json)
-        first_elem = data["Spectrum"][1][0]
-        plt.plot(data["Spectrum"][0], [x - first_elem for x in data["Spectrum"][1]])
+        for key in data.keys():
+            first_elem = data[key][1][0]
+            plt.plot(data[key][0], [x - first_elem for x in data[key][1]])
 
 
 

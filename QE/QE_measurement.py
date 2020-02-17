@@ -191,7 +191,7 @@ class Window(QMainWindow):
         # if self.connected:
         self.keithley = Instrument.Instrument()
         print("setting up")
-        self.keithley.setup(arm=0.1, arm_counts=1, trig_counts=1)
+        self.keithley.setup(arm=0.2, arm_counts=3, trig_counts=3)
         print("source mode change")
         self.keithley.source_mode("V")
         print("measure current")
@@ -319,37 +319,39 @@ class Window(QMainWindow):
             self.content.update({f"spectrum_{self.voltage}": [self.wls, self.data]})
             
         elif self.connected:
-            self.data = []
-            self.wls = []
-            for i in range((self.end_wl - self.start_wl) // self.step + 1):
-                self.wls.append(self.start_wl + self.step * i)
+            for volt in range(20):
+                volt = volt/100
+                self.data = []
+                self.wls = []
+                for i in range((self.end_wl - self.start_wl) // self.step + 1):
+                    self.wls.append(self.start_wl + self.step * i)
 
-            try:
-                self.keithley.source_value(self.voltage)
-                self.keithley.source_enabled(True)
+                try:
+                    self.keithley.source_value(volt)
+                    self.keithley.source_enabled(True)
 
-                SendMessage(self.hwnd, WM_SET_SHUTTER, 1, 0)
-                SendMessage(self.hwnd, WM_SET_WAVE, self.start_wl, 0)
-                sleep(1)
+                    SendMessage(self.hwnd, WM_SET_SHUTTER, 1, 0)
+                    SendMessage(self.hwnd, WM_SET_WAVE, self.start_wl, 0)
+                    sleep(1)
 
-                for wl in self.wls:
-                    print(wl)
-                    SendMessage(self.hwnd, WM_SET_WAVE, wl, 0)
-                    sleep(0.1)
-                    current = self.keithley.get_measurement()
-                    self.data.append(current)
-                    self.subplot.clear()
-                    self.subplot.plot(self.wls[0:len(self.data)], self.data)
-                    self.canvas.draw()
-                    self.canvas.flush_events()
-                    
-                    #if wl in self.VA_wls:
-                    #    self.measure_VA(wl)
-            finally:
-                SendMessage(self.hwnd, WM_SET_SHUTTER, 0, 0)
-                self.keithley.source_value(0)
-                self.keithley.source_enabled(False)
-                self.content.update({"Spectrum": [self.wls, self.data]})
+                    for wl in self.wls:
+                        print(wl)
+                        SendMessage(self.hwnd, WM_SET_WAVE, wl, 0)
+                        sleep(0.1)
+                        current = self.keithley.get_measurement()
+                        self.data.append(current)
+                        self.subplot.clear()
+                        self.subplot.plot(self.wls[0:len(self.data)], self.data)
+                        self.canvas.draw()
+                        self.canvas.flush_events()
+                        
+                        #if wl in self.VA_wls:
+                        #    self.measure_VA(wl)
+                finally:
+                    SendMessage(self.hwnd, WM_SET_SHUTTER, 0, 0)
+                    self.keithley.source_value(0)
+                    self.keithley.source_enabled(False)
+                    self.content.update({f"spectrum_{volt}_V": [self.wls, self.data]})
 
     def save(self):
         print(self.content)
