@@ -112,7 +112,16 @@ class Window(QMainWindow):
         self.start_Button = QPushButton("Start", grp_box1)
         self.start_Button.clicked.connect(self.start_measurement)
         self.start_Button.resize(130, 27)
-        self.start_Button.move(220, 210)
+        self.start_Button.move(220, 245)
+
+        self.set_Uedit = QLineEdit(grp_box1)
+        self.set_Uedit.resize(50, 25)
+        self.set_Uedit.move(160, 210)
+
+        self.Uedit_button = QPushButton("Set voltage", grp_box1)
+        self.Uedit_button.resize(130, 27)
+        self.Uedit_button.clicked.connect(self.set_voltage)
+        self.Uedit_button.move(220, 210)
         
         return grp_box1
         
@@ -230,6 +239,9 @@ class Window(QMainWindow):
         self.step = int(self.step_LineEdit.text())
         self.step_Label.setText("Step: " + str(self.step))
 
+    def set_voltage(self):
+        self.voltage = float(self.set_Uedit.text())
+
     def update(self):
         self.canvas.draw()
         print("Hello")
@@ -304,7 +316,7 @@ class Window(QMainWindow):
                 self.canvas.flush_events()
             
             print(self.keithley.source_enabled(False))
-            self.content.update({"Spectrum": [self.wls, self.data]})
+            self.content.update({f"spectrum_{self.voltage}": [self.wls, self.data]})
             
         elif self.connected:
             self.data = []
@@ -313,7 +325,7 @@ class Window(QMainWindow):
                 self.wls.append(self.start_wl + self.step * i)
 
             try:
-                self.keithley.source_value(0.002)
+                self.keithley.source_value(self.voltage)
                 self.keithley.source_enabled(True)
 
                 SendMessage(self.hwnd, WM_SET_SHUTTER, 1, 0)
